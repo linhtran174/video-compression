@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Node Program",
+            "program": "${file}",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+    {
+        "name": "Run posix demo",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/h264bsd/posix/bin/test_h264bsd",
+        "args": ["/home/linhtt/Videos/Dota/v2_cut_1080p60fps.mp4"], //"test/test_1920x1080.h264"
+        "stopAtEntry": true,
+        "cwd": "${workspaceFolder}/h264bsd/posix",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "additionalSOLibSearchPath": "${workspaceFolder}/h264bsd/posix/obj/",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ],
+        "preLaunchTask": "rake build h264 posix app"
+    },
+    {
+        "name": "Run test file",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/test",
+        "args": [""], //"test/test_1920x1080.h264"
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "additionalSOLibSearchPath": "",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ],
+        "preLaunchTask": "build test file"
+    },
+    ],
+    
+}

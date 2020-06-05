@@ -1,0 +1,28 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "rake build h264 posix app",
+            "type": "shell",
+            "command": "rake test_app",
+            "options": {
+                "cwd": "h264bsd/posix",
+                "env": {
+                    "DEBUG": "1"
+                }
+            }
+        },
+        {
+            "label": "build test file",
+            "type": "shell",
+            "command": "gcc -g -o test test.c -ljpeg -lX11 -lXext -lXtst",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+
+        }
+
+    ]
+}

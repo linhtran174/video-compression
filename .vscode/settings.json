@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.tcc": "c",
+        "fstream": "c",
+        "iosfwd": "c",
+        "istream": "c",
+        "limits": "c",
+        "sstream": "c",
+        "streambuf": "c",
+        "h264bsd_decoder.h": "c",
+        "iostream": "cpp",
+        "cstdlib": "cpp"
+    }
+}
