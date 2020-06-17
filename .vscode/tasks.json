@@ -17,12 +17,45 @@
         {
             "label": "build test file",
             "type": "shell",
-            "command": "gcc -g -o test test.c -ljpeg -lX11 -lXext -lXtst",
+            "command": "gcc",
+            "args": [
+                "-g", "-otest", "test.c",
+                "-I/usr/include/libdrm",
+                "-lX11", "-lXext", "-lXtst" , "-ldrm" , "-lXxf86dga", "-lm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build active C file",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-g", "-o${fileBasenameNoExtension}", "${file}",
+                "-I/usr/include/libdrm",
+                "-lX11", "-lXext", "-lXtst" , "-ldrm" , "-lXxf86dga"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
-            }
-
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "x264 convert raw->mkv",
+            "type": "shell",
+            "command": "x264 --qp 0 --input-csp bgr --input-res 2560x1440 -o test_x264.mkv output.raw",
+            "args": [
+                "--qp 0", "--input-csp bgr",
+                "--input-res 2560x1440",
+                "-o test_x264.mkv",
+                "output.raw"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
-
     ]
 }

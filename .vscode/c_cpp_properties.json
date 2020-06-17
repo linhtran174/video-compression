@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/h264bsd/src",
+                "/usr/include/libdrm",
+                "${workspaceFolder}/mesa-drm/**",
                 "${workspaceFolder}/**"
             ],
             "defines": [],

@@ -9,6 +9,19 @@
         "streambuf": "c",
         "h264bsd_decoder.h": "c",
         "iostream": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "ostream": "cpp",
+        "hash_map": "c",
+        "bitset": "c",
+        "algorithm": "c",
+        "cerrno": "c",
+        "initializer_list": "cpp",
+        "cmath": "c"
     }
 }

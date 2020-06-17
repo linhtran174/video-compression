@@ -14,46 +14,46 @@ int main(int argc, char *argv[]){
 
     // char
     int bufferSize = scri.desktopWidth * scri.desktopHeight 
-    * 3  // BGR - 3 channel
-    * 10  // 6 images
-    + 1; //terminator
+    * 3;  // BGR - 3 channel
 
     char *buffer = (char *)malloc(bufferSize);
     int bPtr, iPtr; //image pointer, buffer pointer
 
-    for(int loop100 = 0; loop100 < 60; loop100++){
-        for (int i = 0; i < 10; i++){
-            image = screenGrabber_getImage();
+    int finalPix = (scri.desktopWidth * scri.desktopHeight * 4) - 1;
+    for (int i = 0; i < 600; i++){
+        image = screenGrabber_getImage();
 
-            bPtr = 0; 
-            iPtr = 0; 
-            int finalPix = (image.height * image.width * 4) - 1;
-            while(iPtr <= finalPix){
-                if(iPtr % 4 != 3){
-                    buffer[bPtr] = image.data[iPtr];
-                    bPtr++;
-                    // if(bPtr == 100) break;
-                }
-                iPtr++;
+        bPtr = 0; 
+        iPtr = 0; 
+        while(iPtr <= finalPix){
+            if(iPtr % 4 != 3){
+                buffer[bPtr] = image.data[iPtr];
+                bPtr++;
+                // if(bPtr == 100) break;
             }
-            // getchar();
-            // for(int y = 0; y < image.height; y++){
-            //     for (int x = 0; x < image.width; x++){
-            //         pointer = (y * image.width + x) * 4;
-            //         char B = image.data[pointer];
-            //         char G = image.data[pointer+1];
-            //         char R = image.data[pointer+2];
-
-            //         fprintf(output, "%c%c%c", B,G,R);
-            //     }
-            //     // fprintf(output, "\n");
-            // }
-            // pointer++;
-            // writeImageToFile(fopen("output.ppm", "w"), image);
+            iPtr++;
         }
-        buffer[bPtr] = 0; //buffer terminator
-        fputs(buffer, output);
+
+        fwrite(buffer, 1, bufferSize, output);
+
+        // getchar();
+        // for(int y = 0; y < image.height; y++){
+        //     for (int x = 0; x < image.width; x++){
+        //         pointer = (y * image.width + x) * 4;
+        //         char B = image.data[pointer];
+        //         char G = image.data[pointer+1];
+        //         char R = image.data[pointer+2];
+
+        //         fprintf(output, "%c%c%c", B,G,R);
+        //     }
+        //     // fprintf(output, "\n");
+        // }
+        // pointer++;
+        // imageToPPM(fopen("output.ppm", "w"), image);
     }
+    fputc(0, output);
+
+
     
     // while(1){
     //     //grab image
