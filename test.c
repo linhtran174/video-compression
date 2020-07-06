@@ -33,10 +33,32 @@ double min(double a, double b, double c) {
 }
 
 int blockSize = 8;
+int w = 1920, h = 1080;
+int pixSize = 3;
+int frameSize, buffSize, lineSize;
+
+int absDiff(int a, int b){
+    return (a > b)?(a-b):(b-a);
+}
 
 //Mean Absolute Difference 
-int MAD(u8* block1, int x1, int y1, u8* block2, int x2, int y2){
+int MAD(u8* block1, u8* block2){
+    int result = 0;
+    int offset;
+    for(int i = 0; i < blockSize; i++){
+        for(int j = 0; j < blockSize; j++){
+            for(int dim = 0; dim < pixSize; dim++){
+                offset = i*lineSize + j + dim;
+                result += absDiff(
+                    block1[offset],
+                    block2[offset]
+                );
+            }
+        }
+    }
 
+    result /= (blockSize * blockSize * pixSize);
+    return result;
 }
 
 
@@ -44,16 +66,19 @@ int main(){
     FILE *f = fopen("/home/linh/Videos/dota_1920x1080_48fps/dota2.rgb24", "r"),
     *outputFile = fopen("/home/linh/Videos/dota_1920x1080_48fps/dota2.segmented", "w+");
 
-    int w = 1920, h = 1080;
-
-    int frameSize =  w*h*3;
-    int buffSize = frameSize * 48;
+    frameSize =  w*h*pixSize;
+    buffSize = frameSize * 48;
+    lineSize = w*pixSize;
     u8 *_48frames = (u8 *)malloc(buffSize);
     
 
     int MBSize = blockSize * blockSize * 3;
     int numVBlock = h/blockSize;
     int numHBlock = w/blockSize;
+
+    // Block vertical & horizontal offset
+    int blockVOffset = lineSize * blockSize;
+    int blockHOffset = blockSize * pixSize;
     
     size_t read = 0;
     for (int j = 0; j < 10; j++){
@@ -63,38 +88,56 @@ int main(){
         //four step search 
         // u8 *current_MB = (u8 *)malloc(MBSize);
         // u8 mX = 0, mY = 0;
-
-        // u8 **candidateMBs = (u8 **)malloc(sizeof(u8 *) * 10);
-        // for(int c = 0; c < 10; c++){
-        //     candidateMBs[c] = (u8 *)malloc(MBSize);
-        // }
         
-        //first step
-        for(int c = 0; c < blockSize; c++){
-            for(int d = 0; d < blockSize; d++){
-                
-            }
-        }
 
-        u8 *currentMB;
+        u8 *currentMB, *currentFrame, *prevFrame;
+        int candidateCount = 0;
+        u8 **candidateMBs = (u8 **)malloc(10 * sizeof(u8 *));
         // int x1, y1, x2, y2;
+
+        int MBOffset;
+        int stepSize = 2; 
+        int cost;
+        
+        short mVector[2]; 
+
         for(int frame = 1; frame < 48; frame++){
 
-            //first row 
-            int candidateCount = 0;
+            currentFrame = _48frames + frame * frameSize;
+            prevFrame = _48frames + (frame - 1) * frameSize;
 
-            u8 *currentFrame = _48frames + frame * frameSize;
+            //four corner
+            // candidateCount = 4; 
+
+            // //top left 
+            // currentMB
+            // candidateMBs = 
+            
+            
             for(int c = 0; c < numVBlock; c++){
                 for(int d = 0; d < numHBlock; d++){
-                    currentMB = currentFrame + (c * MBSize * numHBlock) + (d * blockSize * 3)
-                    // same pos
-                    MAD(currentMB, d, c, )
-                    
+                    MBOffset = (c * blockVOffset) + (d * blockHOffset);
+                    currentMB = currentFrame + MBOffset;
+                    candidateCount = 0;
 
+                    //same pos
+                    cost = MAD(currentMB, prevFrame + MBOffset);
+                    if(cost <= 10){
+                        // check cost 
+                    }
+                    
+                    //top-left
+                    if(c >= stepSize && d >= stepSize){
+                        candidateMBs[candidateCount] = 
+                        prevFrame + c*(blockSize - stepSize)*lineSize + d*(blockSize - stepSize);
+
+                        candidateCount++;
+                    }
+                    MAD(currentMB, currentMB);
 
                 }
             }
-            _48frames[1*frameSize + ] 
+            // _48frames[1*frameSize + ] 
         }
 
         
