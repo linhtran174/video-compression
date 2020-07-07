@@ -21,7 +21,10 @@
             "args": [
                 "-g", "-otest", "test.c",
                 "-I/usr/include/libdrm",
-                "-lX11", "-lXext", "-lXtst" , "-ldrm" , "-lXxf86dga", "-lm"
+                "-lX11", 
+                "-lXext",
+                "-lXtst" , "-ldrm",
+                "-lm"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/"

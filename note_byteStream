@@ -1,0 +1,19 @@
+//motionSearch -> output motionVector 
+
+frame = frameType (1byte) + blocks 
+
+(frameType = intra)
+MB = normal rawvideo pixel format
+
+(frameType = "segmenting")
+MB = codeOrNot (1byte) + content
+(if codeOrNot = code)
+content = motionVector
+(if codeOrNot = notCode)
+content = normal rawvideo pixel format
+
+(frameType = "segmented")
+frame = frameType + backgroundMotionVector + blocks 
+MB = type (1byte) (background, moving obj)
+
+
