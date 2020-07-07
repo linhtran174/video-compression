@@ -86,11 +86,6 @@ double min(double a, double b, double c) {
    return ((a < b)? (a < c ? a : c) : (b < c ? b : c));
 }
 
-//
-int nHueBin; //8bit
-int nSatBin; //8bit
-int nValBin; //8bit
-// int nTotalBin = 256 * 16 * 16;
 
 
 
@@ -208,15 +203,15 @@ int nValBin; //8bit
 int RGBToHSV(u8 *RGB, double *HSV) {
 
     double r = (double)RGB[0], g = (double)RGB[1], b = (double)RGB[2];
-    // R, G, B values are divided by 255
-    // to change the range from 0..255 to 0..1:
+    
+    //Change the range from 0..255 to 0..1:
     double h, s, v;
     r /= 255.0;
     g /= 255.0;
     b /= 255.0;
-    double cmax = max(r, g, b); // maximum of r, g, b
-    double cmin = min(r, g, b); // minimum of r, g, b
-    double diff = cmax-cmin; // diff of cmax and cmin.
+    double cmax = max(r, g, b); 
+    double cmin = min(r, g, b);
+    double diff = cmax-cmin;
     if (cmax == cmin)
         h = 0;
     else if (cmax == r)
@@ -225,14 +220,14 @@ int RGBToHSV(u8 *RGB, double *HSV) {
         h = fmod((60 * ((b - r) / diff) + 120), 360.0);
     else if (cmax == b)
         h = fmod((60 * ((r - g) / diff) + 240), 360.0);
-    // if cmax equal zero
-        if (cmax == 0)
-            s = 0;
-        else
-            s = (diff / cmax);
+
+    if (cmax == 0)
+        s = 0;
+    else
+        s = (diff / cmax);
+
     // compute v
     v = cmax;
-    
 
     HSV[0] = h, HSV[1] = s, HSV[2] = v;
     return 0;
@@ -309,23 +304,20 @@ void HSVToRGB(u8 *RGB, double *HSV)
                 B = qv;
                 break;
 
-            // Just in case we overshoot on our math by a little, we put these here. Since its a switch it won't slow us down at all to put these here.
-
             case 6:
                 R = V;
                 G = tv;
                 B = pv;
                 break;
+
             case -1:
                 R = V;
                 G = pv;
                 B = qv;
                 break;
 
-            // The color is not defined, we should throw an error.
             default:
-                //LFATAL("i Value error in Pixel conversion, Value is %d", i);
-                R = G = B = V; // Just pretend its black/white
+                R = G = B = V; 
                 break;
         }
     }
@@ -335,7 +327,11 @@ void HSVToRGB(u8 *RGB, double *HSV)
 }
 
 
-//
+////
+int nHueBin; //8bit
+int nSatBin; //8bit
+int nValBin; //8bit
+// int nTotalBin = 256 * 16 * 16;
 
 int nHBit = 5;
 int nSBit = 6;
