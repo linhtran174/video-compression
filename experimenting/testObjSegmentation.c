@@ -29,6 +29,7 @@ int w = 1920, h = 1080;
 int pixSize = 3;
 int frameSize, buffSize, lineSize, MBSize;
 int blockVOffset, blockHOffset;
+int numVBlock, numHBlock;
 
 int absDiff(int a, int b){
     return (a > b)?(a-b):(b-a);
@@ -58,32 +59,84 @@ enum _frameMode {intra, segmenting, segmented};
 enum _MBtype {background, mObj};
 
 void motionSearch(u8 *currentFrame, u8 *prevFrame, int x, int y, i8 *motionVector, i8 *costOfMatchBlock){
+    // 4 step search
     int stepSize = 2; 
-    int cost;
-    char mVector[2]; 
+    int cost; 
 
-    int MBOffset = (x * blockVOffset) + (y * blockHOffset);
+    int MBOffset = (y * blockVOffset) + (x * blockHOffset);
     u8 *currentMB = currentFrame + MBOffset;
     u8 **candidateMBs = (u8 **)malloc(10 * sizeof(u8 *));
     int candidateCount = 0;
 
-    //same pos
-    cost = MAD(currentMB, prevFrame + MBOffset);
+    //same position
+    int samePosMB = prevFrame + MBOffset;
+    cost = MAD(currentMB, samePosMB);
     if(cost <= 10){
         // check cost 
-        mVector[0] = 0;
-        mVector[1] = 0;
+        motionVector[0] = 0;
+        motionVector[1] = 0;
+        (*costOfMatchBlock) = cost;
+        return;
     }
+
+    // First step
     
     //top-left
-    if(x >= stepSize && y >= stepSize){
+    int stepXOffset = stepSize;
+    int stepYOffset = stepSize*lineSize;
+    if(x*blockSize >= stepSize && y*blockSize >= stepSize){
         candidateMBs[candidateCount] = 
-        prevFrame + x*(blockSize - stepSize)*lineSize + y*(blockSize - stepSize);
+        samePosMB - stepYOffset - stepXOffset;
+        // + y*(blockSize - stepSize)*lineSize + x*(blockSize - stepSize);
 
         candidateCount++;
     }
-    MAD(currentMB, currentMB);
+    //top-mid
+    if(y*blockSize >= stepSize){
+        candidateMBs[candidateCount] = 
+        samePosMB - stepYOffset;
+        candidateCount++;
+    }
+    //top-right
+    if(y*blockSize >= stepSize && (x+1)*blockSize + stepSize <= w){
+        candidateMBs[candidateCount] = 
+        samePosMB - stepYOffset + stepXOffset;
+        candidateCount++;
+    }
+    //right-mid
+    if((x+1)*blockSize + stepSize <= w){
+        candidateMBs[candidateCount] = 
+        samePosMB + stepXOffset;
+        candidateCount++;
+    }
+    //right-bottom
+    if((y+1)*blockSize + stepSize <= h && (x+1)*blockSize + stepSize <= w){
+        candidateMBs[candidateCount] = 
+        samePosMB + stepYOffset + stepXOffset;
+        candidateCount++;
+    }
+    //bottom-mid
+    if((y+1)*blockSize + stepSize <= h){
+        candidateMBs[candidateCount] = 
+        samePosMB + stepYOffset;
+        candidateCount++;
+    }
+    //bottom-left
+    if((y+1)*blockSize + stepSize <= h && x*blockSize - stepSize >= 0){
+        candidateMBs[candidateCount] = 
+        samePosMB + stepYOffset - stepXOffset;
+        candidateCount++;
+    }
+    //mid-left
+    if(x*blockSize - stepSize >= 0){
+        candidateMBs[candidateCount] = 
+        samePosMB - stepXOffset;
+        candidateCount++;
+    }
 
+    //choose best block from candidates based on cost 
+
+    //2nd/3rd step
 }
 
 int main(){
@@ -96,8 +149,8 @@ int main(){
     u8 *_48frames = (u8 *)malloc(buffSize);
     
     MBSize = blockSize * blockSize * 3;
-    int numVBlock = h/blockSize;
-    int numHBlock = w/blockSize;
+    numVBlock = h/blockSize;
+    numHBlock = w/blockSize;
 
     // Block vertical & horizontal offset
     blockVOffset = lineSize * blockSize;
@@ -130,15 +183,15 @@ int main(){
         // Intra mode
         if(fMode == intra){
             //Dump raw RGB pixels
-            fwrite(&fMode, 1, 1, outputFile);
-            fwrite(currentFrame, frameSize, 1, outputFile);
+            // fwrite(&fMode, 1, 1, outputFile);
+            // fwrite(currentFrame, frameSize, 1, outputFile);
             fMode = segmenting;
             read = fread(_48frames, buffSize, 1, f);
             continue;
         }
 
         if(fMode == segmenting){
-            fwrite(&fMode, 1, 1, outputFile);
+            // fwrite(&fMode, 1, 1, outputFile);
 
             // histogram of X and Y value. Range -128 -> 127 (halved precision).
             int hisX[64]; 
@@ -152,7 +205,7 @@ int main(){
                 for(int d = 0; d < numHBlock; d++){
                     
                     // Do normal motion search
-                    motionSearch(currentFrame, prevFrame, c, d, cMotionVector, &costOfMatchBlock);
+                    motionSearch(currentFrame, prevFrame, d, c, cMotionVector, &costOfMatchBlock);
                     //Save mv
                     memcpy(prevMV[c][d], cMotionVector, 2);
                     // prevMV[c][d][0] = cMotionVector[0]
@@ -256,7 +309,7 @@ int main(){
                     // If blockType = moving objects || unset (-1)
                     else{
                         // motion vector = normal motion search()
-                        motionSearch(currentFrame, prevFrame, c, d, cMotionVector, &costOfMatchBlock);
+                        motionSearch(currentFrame, prevFrame, d, c, cMotionVector, &costOfMatchBlock);
                         meanCostValue += costOfMatchBlock;
                         //
                     }
